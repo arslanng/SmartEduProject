@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ders Notu|Smart Edu</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row Ortam">
+            <h1>Ortam Hazırlama</h1>
+            <p>
+                Hazır dosyaları temp içine aldık.
+            </p>
+            <p>
+                konsola: <br>
+                <code>
+                    npm init
+                </code> <br>
+                konsola: <br>
+                <code>
+                    npm i express
+                </code>
+            </p>
+            <p>
+                app.js içine: <br>
+                express import: <br>
+                <code>
+                    const express = require('express'); <br><br>
+                    const app = express();
+                </code> <br><br>
+                port için: <br>
+                <code>
+                    const port = 3000; <br>
+                    app.listen(port, ()=>{ <br>
+                        console.log(`App started on port ${port}`)
+                    })
+                </code>
+            </p>
+            <p>
+                konsola: <br>
+                <code>
+                    npm i --save-dev nodemon
+                </code> veya
+                <code>
+                    npm i -D nodemon
+                </code> geliştirme aracı olarak nodemon yükler.
+            </p>
+            <p>
+                package.json da "scripts" alanında test silinir ve <br>
+                <code>
+                    "start": "nodemon app.js"
+                </code> ile nodemon üzerinden app.js start komutuna işlenir.
+            </p>
+            <p>
+                daha önceki projeden .prettierrc dosyası bu projeye kopyalanır. Bu sayede her sağ tıklayıp format document dediğimizde .js kod düzenlemesi daha düzenli görünür.
+            </p>
+            <p>
+                git reposite oluşturuldu ve github ile bağlandı.
+            </p>
+        </div>
+        <div class="row httpStatus">
+            <h1>HTTP Status Codes (HTTP Yanıt Durumu Kodları)</h1>
+            <p>
+                <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">developer.mozilla.org/en-US/docs/Web/HTTP/Status</a>
+            </p>
+            <p>
+                HTTP status code o an yapılan işlem hakkında bilgi verir.
+            </p>
+            <h2>Sık Kullanılan Durum Kodları</h2>
+            <ul>
+                <li>200 - OK</li>
+                <li>201 - Created</li>
+                <li>404 - Not found</li>
+                <li>500 - Internal Server Error</li>
+                <li>400 - Bad Request</li>
+                <li>401 - Unauthorized</li>
+                <li>403 - Forbidden</li>
+                <li>501 - Not Implemented</li>
+            </ul>
+
+        </div>
+        <div class="row template">
+            
+        </div>
+    </div>
+    
+</body>
+</html>
