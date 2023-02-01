@@ -34,7 +34,7 @@ app.use(
     secret: 'keyboard_cat_rambo',
     resave: false,
     saveUninitialized: true,
-    store: MongoStore.create({ mongoUrl: 'mongodb://localhost/smartedu-db' }),
+    store: MongoStore.create({ mongoUrl: 'mongodb+srv://arslan_ng:narniag7A.@cluster0.cqw1stg.mongodb.net/?retryWrites=true&w=majority' }),
   })
 );
 app.use(flash());

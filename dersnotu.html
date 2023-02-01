@@ -2376,6 +2376,24 @@
             <p>
                 Yeni database e bağlanırlen tüm veriler sıfırlanacağı için, index sayfasında courses verilerini if(courses[0]) benzeri koşullara alıyoruz. 
             </p>
+            <p>
+                connect için kullandığımız mongodb bağlantısını middleware içindeki kısmı update ederken kullanmayı unutma. <br>
+                <code> bağlantı için: <br>
+                    mongoose <br>
+                    .connect('<u>mongodb+srv://arslan_ng:narniag7A.@cluster0.cqw1stg.mongodb.net/?retryWrites=true&w=majority</u>') <br>
+                    .then(() => console.log('DB Connected!'));
+                </code> <br>
+                <code> session middleware için: <br>
+                    app.use( <br>
+                    session({ <br>
+                        secret: 'keyboard_cat_rambo', <br>
+                        resave: false, <br>
+                        saveUninitialized: true, <br>
+                        store: MongoStore.create({ mongoUrl: '<u>mongodb+srv://arslan_ng:narniag7A.@cluster0.cqw1stg.mongodb.net/?retryWrites=true&w=majority</u>' }), <br>
+                    }) <br>
+                    ); 
+                </code>
+            </p>
         </div>
     </div>
     
