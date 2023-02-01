@@ -5,6 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ders Notu|Smart Edu</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
 </head>
 <body>
     <div class="container">
@@ -69,7 +72,7 @@
                 HTTP status code o an yapılan işlem hakkında bilgi verir.
             </p>
             <h2>Sık Kullanılan Durum Kodları</h2>
-            <ul>
+            <ul style="list-style-position: inside;">
                 <li>200 - OK</li>
                 <li>201 - Created</li>
                 <li>404 - Not found</li>
@@ -79,12 +82,2295 @@
                 <li>403 - Forbidden</li>
                 <li>501 - Not Implemented</li>
             </ul>
+            <p>
+                örnek html status gönderimi: <br>
+                <code>
+                    app.get('/', (req, res) => { <br>
+                        res.status(200).send('index sayfası'); <br>
+                      });
+                </code>
+            </p>
 
         </div>
         <div class="row template">
+            <h2>Template Engine</h2>
+            <p>
+                Konsola: 
+                <code>
+                    npm i ejs
+                </code> ile ejs yüklenir <br>
+            </p>
+            <p> app js Template Engine alanına: <br>
+                <code>
+                    app.set("view engine", "ejs");
+                </code> <br>
+                Statik dosyaları almak için app js Middlewares alanına: <br>
+                <code>
+                    app.use(express.static("public"));
+                </code>  
+            </p>
+            <p>
+                kök dizine public klasörü oluşturulur ve tempin içindeki .html harici içine eklenir.               
+            </p>
+            <p>
+                kök dizine views klasörü oluşturulur ve .html dosyalar içine alınır. uzantılar .ejs ye çevirilir.
+            </p>
+            <p>
+                views içine partials klasörü oluşturulur. Bu alanda tüm sayfalarda ortak olacak kısımlar tutulur. <br>
+                _header.ejs <br>
+                _navigation.ejs <br>
+                _footer ejs gibi. <br>
+                Bunların içine tüm templatelerde ortak olacaklar atanır. sonra buradan çekilir. Bunun için: <br>
+                <code>
+                    <%- include('partials/_header'); -%>
+                </code> kalıbı kullanılır.
+            </p>
+            <p>
+                partials içindeki linkler düzenlenir.
+            </p>
+            <p>
+                Navbar üzerinden aktif olan sayfanın linkini farklı göstermek için active klası kullanılır. Bunu dinamik olarak yapmak için önce page_name bilgisi app.js içinden response içinde gönderilir. Sonra bu bilgi _navigation.ejs içinde yakalanır ve koşul true ise active olarak dönmesi sağlanır. <br>
+                <code>
+                    app.get('/', (req, res) => { <br>
+                        res.status(200).render('index', { <br>
+                          page_name: "index"
+                        });
+                      });
+                </code> ile page_name: 'index' olarak alınır. <br>
+                <code>
+                    &lt;li class="nav-item &lt;%= page_name === 'index' && 'active' %>">&lt;a class="nav-link" href="/">Home&lt;/a>&lt;/li> <br>
+                    &lt;li class="nav-item &lt;%= page_name === 'about' && 'active' %>">&lt;a class="nav-link" href="/about">About Us&lt;/a>&lt;/li>
+                </code> ile sayfa adı sınanır ve true ise active çıktısı verir.
+            </p>
+        </div>
+        <div class="row routing">
+            <h1>Routing</h1>
+            <p>
+                ileri okuma için <a href="https://expressjs.com/en/guide/routing.html">tıklayınız.</a>
+            </p>
+            <p>
+                controllers/pageController.js oluşturuldu.
+            </p>
+            <p>
+                app.js router alanında router fonksiyonların içindeki req-res fonksiyonlar pageController.js içine taşınır ve buradan export edilir.
+            </p>
+            <p>
+                routes/pageRouter.js içine pageController require edilir. Bu kısımda route işlemi yapılacağından express modülü de çağırılır.
+            </p>
+            <p>
+                pageController.js: <br>
+                <code>
+                    const express = require('express') <br>
+                    const pageController = require('../controllers/pageController')
+                </code> ile import işlemleri yapılır. <br>
+                <code>
+                    const router = express.Router() 
+                </code>ile Router() fonksiyonu değişkene atanır. <br>
+                <code>
+                    router.route('/').get(pageController.getIndexPage) <br>
+                    router.route('/about').get(pageController.getAboutPage)
+                </code> ile route işlemleri tanımlanır. <br>
+                <code>
+                    module.exports = router 
+                </code> ile değişkene tanımlanan fonksiyon export edilir.
+            </p>
+            <p>
+               app.js içine router modülü çağırılır. router alanı aşağıdaki gibi düzenlenir: <br>
+               <code>
+                app.use('/', pageRoute);  
+               </code> 
+            </p>
+        </div>
+        <div class="row kursModeli">
+            <h1>Kurs Modeli</h1>
+
+            <h2>DB Bağlantı</h2>
+            <p>
+                konsola: <br>
+                <code>
+                    npm i mongoose
+                </code>
+            </p>
+            <p>
+                app.js içine mongoose require edilir. <br>
+                <code>
+                    const mongoose = require('mongoose');
+                </code> <br>
+                Database connect için: <br>
+                <code>
+                    mongoose.connect('mongodb://localhost/smartedu-db').then(() => console.log('DB Connected!'));
+                </code>
+            </p>
+
+            <h2>Modeller</h2>
+            <p>
+                Dinamik olmasını istediğimiz veriler için model oluşturulur.
+            </p>
+            <p>
+                Model adları genelde büyük yazılır.
+            </p>
+            <p>
+                models/Course.js oluşturuldu ve içine mongoose import edildi.
+            </p>
+            <p>
+                <code>
+                    const mongoose = require('mongoose'); <br>
+                    const Schema = mongoose.Schema;
+                </code> <br>
+                <code>
+                    const CourseSchema = new Schema({ <br>
+                        name: { <br>
+                          type: String, 
+                </code>veri tipi string. <br>
+                <code>
+                    unique: true,
+                </code> eşsiz <br>
+                <code>
+                    required: true,
+                </code> doldurulması zorunlu. <br>
+                <code>
+                }, <br>
+                description: { <br>
+                  type: String, <br>
+                  required: true, <br>
+                  trim: true,
+                </code> Baştaki ve sondaki boşlukları görmezden gel. <br>
+                <code>
+                    createdAt: { <br>
+                        type: Date,  
+                </code> veri tipi tarih. <br>
+                <code>
+                    default: Date.now(), 
+                </code> varsayılan değer olarak işlemin yapıldığı tarihi alır. <br>
+                <code>
+                },
+            });
+                </code> ile şema oluşturulur.
+            </p>
+            <p>
+                <code>
+                    const Course = mongoose.model('Course', CourseSchema);
+                </code> ile model oluşturuldu <br>
+                <code>
+                    module.exports = Course;
+                </code> ile export edildi.
+            </p>
             
+            <h2>Modeli Kullanmak</h2>
+            <p>
+                controllers/courseController.js dosyası oluşturuldu. İçine: <br>
+                <code>
+                    exports.createCourse = async (req, res) => {
+                </code> ile asenkron createCourse fonksiyonu export edilir. <br>
+                
+                <code>
+                    try{
+                </code> işlemde hata varsa yakalaması için tüm işlem try-catch yapısına taşınır. <br>
+                <code>
+                    const course = await Course.create(req.body); 
+                </code> ile yeni kurs yazılır. <br>
+                <code>
+                    res.status(201)
+                </code> ile status code 201-created gönderilir. <br>
+                <code>
+                    .json({
+                        status: 'succest',
+                        course
+                    })
+                </code> diğer veriler hazır olmadığından şimdilik bu veri gönderilir. <br>
+                <code>
+                } catch (error) { <br>
+                    res.status(400) 
+                </code> ile status code 400-bad request gönderilir. <br>
+                <code>
+                    .json({
+                        status: 'fail',
+                        error,
+                      });
+                    }
+                  };
+                </code>
+            </p>
+            <p>
+                routes/courseRoute.js oluşturuldu. içine: <br>
+                <code>
+                    const express = require('express') <br>
+                    const courseController = require('../controllers/courseController') <br>
+
+                    const router = express.Router() <br>
+
+                    router.route('/').post(courseController.createCourse)
+                </code> ile post request createCourse fonksiyonunu çalıştırır.
+                <code>
+                    module.exports = router
+                </code>
+            </p>
+            <p>
+                app.js içine courseRoute import edilir. routes alanına: <br>
+                <code>
+                    app.use('/courses', courseRoute);
+                </code> eklendi.
+            </p>
+        </div>
+        <div class="row apiPostman">
+            <h1>Postman ve API</h1>
+
+            <h2>API</h2>
+            <p>
+                Application Program Interface
+            </p>
+            <p>
+                API'ler, iki yazılım bileşeninin belirli tanımlar ve protokoller aracılığıyla birbiriyle iletişim kurmasına olanak tanıyan mekanizmalardır. Örneğin, meteoroloji müdürlüğünün yazılım sistemi, günlük hava durumu verilerini içerir. Telefonunuzdaki hava durumu uygulaması, API'ler aracılığıyla bu sistemle "konuşur" ve telefonunuzda size günlük hava durumu güncellemelerini gösterir. 
+            </p>
+
+            <h2>Postman</h2>
+            <p>
+                Frontend hazır değilken backend tarafını test etmek için kullanılır. requesti simüle eder ve gelen response u gösterir.
+            </p>
+            <p>
+                <a href="https://www.postman.com/downloads/">postman.com/downloads/</a> -> download ve setup
+            </p>
+            <p>
+                uygulama içinden + ile yeni untitled request oluşturulur. <br>
+                ilgili request seçilir ve gönderilecek url girilir. <br>
+                ilgili veriler body alanına json olarak yazılır. <br>
+                send ile gönderilir.
+            </p>
+            <p>
+                Verinin alınması için gelen url req.body üzerinden middleware ile işlenmeli. Bunun için courseController içine middleware olarak: <br>
+                <code>
+                    app.use(express.json()) // for parsing application/json
+                    app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+                </code>
+            </p>
+            <p>
+                gelen response uygulamada görülür.
+            </p>
+        </div>
+        <div class="div kursListeleme">
+            <h1>Kursları Listelemek</h1>
+            <p>
+                courses.ejs template engine göre düzenlenir. courses linki _navigation.ejs içinde güncellenir.
+            </p>
+            <p>
+                courseRoute.js içine: <br>
+                <code>
+                    router.route('/').get(courseController.getAllCourses); 
+                </code> eklenir. Bu sayede "/courses" için get request yapılırsa courseController.getAllCourses çağırılır.
+            </p>
+            <p>
+                courseController.js içine: <br>
+                <code>
+                    exports.getAllCourses = async (req, res) => { <br>
+                        try { <br>
+                          const courses = await Course.find();
+                </code> ile veritabanından tüm kurslar alınır. <br>
+                <code>
+                    res.status(200).render('courses', { <br>
+                        courses, <br>
+                        page_name: 'courses' 
+                      }); 
+                </code> courses.ejs, courses bilgisi ve page_name bilgisi gönderilir. <br>
+                <code>
+                } catch (error) { <br>
+                    res.status(400).json({ <br>
+                      status: 'fail', <br>
+                      error,
+                    });
+                  }
+                }; 
+                </code>
+            </p>
+            <p>
+                courses.ejs içindeki kusrların gösterildiği taslaklardan biri bırakıldı. Kalanlar silindi. Bırakılan taslak aşağıdaki for döngüsü içine alındı. <br>
+                <code>
+                    <% for(let i=0; i<courses.length; i++ ){ %> <br>
+                        ... <br>
+                        taslak <br>
+                        ... <br>
+                    <% } %>
+                </code> <br>
+                taslağın name kısmı: <br>
+                <code>
+                    <%= courses[i].name %>
+                </code> <br>
+                desctiption kısmı: <br>
+                <code>
+                    <%= courses[i].description.substring(0, 100) + "..." %>
+                </code> olarak güncellenir. Bu sayede get request ile alınan courses bilgisi kullanılmış olur. .substring(0, 100) metodu ile courses sayfasında description kısmında görünecek karakter sayısı sınırlandırılır.
+            </p>
+            
+        </div>
+        <div class="row tekliKurs">
+            <h1>Tekil Kurs Sayfası ve Slugify</h1>
+
+            <p>
+                course-single.ejs adı course.ejs yapılır ve template engine'e uygun düzenlenir.
+            </p>
+            <p>
+                courses.ejs içindeki link: <br>
+                <code>
+                    /courses/<%= courses[i]._id %>
+                </code>
+            </p>
+            <p>
+                _navigation.ejs, _header.ejs ve _footer.ejs içindeki lokal linklerin başına / eklenir ki ulaşılabilinsin.
+            </p>
+            <p>
+                courseRoute.js içinde: <br>
+                <code>
+                    router.route('/:id').get(courseController.getCourse);
+                </code> yönlendirmesi yapılır. /courses/_id olarak gelen get request courseController.getCourse fonksiyonuna yönlendirilir.
+            </p>
+            <p>
+                courseController.js içine:
+                <code>
+                    exports.getCourse = async (req, res) => { <br>
+                        try { <br>
+                          const course = await Course.findById({_id: req.params.id});
+                </code> ile request olarak gelen id deki course bilgisi course değişkenine atanır. <br>
+                <code>
+                    res.status(200).render('course', { <br>
+                        course, <br>
+                        page_name: 'courses'
+                      });
+                    
+                </code> ile course.ejs render edilir ve course değişkenindeki bilgi gönderilir. <br>
+                <code>
+                } catch (error) { <br>
+                    res.status(400).json({ <br>
+                      status: 'fail', <br>
+                      error,
+                    });
+                  }
+                };
+                </code>
+            </p>
+            <p>
+                course.ejs içinde uygun alanlara <br>
+                <code>
+                    <%= course.name %>
+                </code> ve <br>
+                <code>
+                    <%= course.description %>
+                </code> eklenir. Bu sayede course bilgisi sayfada dinamik olarak kullanılır <br>
+                Bu sayfadaki fotoğrafların düzgün çalışması için de img hrefin değişkeninin başına / eklenir.
+            </p>
+
+            <h2>Slugify</h2>
+            <p>
+                Tekil kurs sayfalarını _id parametersi ile çağırdığımızda bu ID url de 6095037e031db830c0a724ee benzer _id parametresinin görünmesine neden olur. Bunun yerinde daha anlamlı olan bir slug ifadesinin bulunmasını isteriz. Bunun için slugify paketinden faydalanacağız.
+            </p>
+            <p>
+                terminale: <br>
+                <code>
+                    npm i slugify
+                </code>
+            </p>
+            <p>
+                models/Course.js içine: <br>
+                <code>
+                    const slugify = require('slugify');
+                </code> ile slugfy import edilir. <br>
+                modelin içine: <br>
+                <code>
+                    slug:{ <br>
+                        type: String, <br>
+                        unique: true 
+                      }
+                </code> ilave edilir. <br>
+                Modelin altına: <br>
+                <code>
+                    CourseSchema.pre('validate', function(next){
+                        this.slug = slugify(this.name, {
+                          
+                </code> ile isim slug a çevirilir. Bu işlem için arrow fonksiyon kullanılmaz çünkü arrowda this alınmaz. <br>
+                <code>
+                    lower: true,
+                </code> ile hepsi küçük harfe dönüştürülür. <br>
+                <code>
+                    strict: true
+                </code> ile stirng olmayan karakterler atılır. <br>
+                <code>
+                }); <br>
+                next();
+                </code> ile fonksiyon bir sonrakine devam ettirilir. <br>
+                <code>
+                })
+                </code>
+            </p>
+            <p>
+                Sayfayı slug üzerinden request etmek için courses.esj içindeki link: <br>
+                <code>
+                    /courses/<%= courses[i].slug %>
+                </code> olarak düzenlenir. <br>
+                Bunu alıp yönlendirecek olan router courseRoute.js içinde: <br>
+                <code>
+                    router.route('/:slug').get(courseController.getCourse);
+                </code> olarak düzenlenir. <br>
+                requesti alıp response yapabilmesi için courseController.js içindeki getCourse fonksiyonunun ilgili kısmı: <br>
+                <code>
+                    exports.getCourse = async (req, res) => { <br>
+                        try { <br>
+                          const course = await Course.findOne({slug: req.params.slug}); <br>
+                          ....
+                </code> olarak düzenlenir.
+            </p>
+
+        </div>
+        <div class="row kategori">
+            <h1>Kategori Oluşturmak ve Listelemek</h1>
+            <p>
+                Kategori için model oluşturup, bu modeli course modeli ile bağlayacağız.
+            </p>
+            <p>
+                models/Category.js oluşturuldu. İçine: (Course.js model alındı.) <br>
+                <code>
+                    const mongoose = require('mongoose'); <br>
+                    const slugify = require('slugify'); <br>
+                    const Schema = mongoose.Schema; <br><br>
+
+                    const CategorySchema = new Schema({ <br>
+                    name: { <br>
+                        type: String, <br>
+                        unique: true, <br>
+                        required: true, <br>
+                    },
+                    slug: {
+                        type: String, <br>
+                        unique: true, <br>
+                    },
+                    }); <br><br>
+
+                    CategorySchema.pre('validate', function (next) { <br>
+                    this.slug = slugify(this.name, { <br>
+                        lower: true, <br>
+                        strict: true, <br>
+                    }); <br>
+                    next(); 
+                    }); <br><br>
+
+                    const Category = mongoose.model('Category', CategorySchema); <br><br>
+
+                    module.exports = Category;
+                </code> <br>
+                Course.js <code>CourseSchema</code> içine: <br>
+                <code>
+                    category: { <br>
+                        type:mongoose.Schema.Types.ObjectId, <br>
+                        ref:'Category' <br>
+                      }
+                </code> ilave edilerek course ile category modelleri ilişkilendirilir.
+            </p>
+            <p>
+               controllers/categoryController.js oluşturuldu. içine: <br>
+               <code>
+                const Category = require('../models/Category') <br><br>
+
+                exports.createCategory = async (req, res) => { <br>
+                  try { <br>
+                    const category = await Category.create(req.body); <br><br>
+                
+                    res.status(201).json({ <br>
+                      status: 'succest', <br>
+                      category, <br>
+                    }); <br>
+                  } catch (error) { <br>
+                    res.status(400).json({ <br>
+                      status: 'fail', <br>
+                      error, <br>
+                    }); <br>
+                  }
+                };
+               </code> ile create fonksiyonu oluşturuldu.
+            </p>
+            <p>
+                routes/courseRoute.js oluşturuldu. içine: <br>
+                <code>
+                    const express = require('express') <br>
+                    const categoryController = require('../controllers/categoryController') <br><br>
+
+                    const router = express.Router() <br><br>
+
+                    router.route('/').post(categoryController.createCategory); <br><br>
+
+                    module.exports = router
+                </code> ile post request create fonksiyonuna yönlendirildi.
+            </p>
+            <p>
+                app.js içine: categoryRoute import edildi. router alanına:<br>
+                <code>
+                    app.use('/categories', categoryRoute);
+                </code> ilave edilir.
+            </p>
+            <p>
+                postman ile category verisi oluşturuldu. Sonra bu kategorilerle ilişkili course oluşturuldu.
+            </p>
+            <p>
+                Kategorileri courses sayfasında listelemek için courseController.js içine Category modeli import edilir. getAllCourses içine: <br>
+                <code>
+                    const categories = await Category.find();
+                </code> ile categories değişkenine database içindeki ilgili veri tanımlanır. render fonksiyonu içine eklenerek response edilir. Bu cevap aşağıdaki for döngüsü ile courses.ejs içinde yakalanır.
+            </p>
+            <p>
+                courses.ejs içinde ilgili alan: <br>
+                <code>
+                    &lt;h3 class="widget-title">Categories&lt;/h3> <br>
+						&lt;ul> <br>
+							&lt;% for(let i=0; i&lt;categories.length; i++){ %> <br>
+							&lt;li>&lt;a href="/courses?categories=&lt;%= categories[i].slug %>">&lt;%= categories[i].name %>&lt;/a>&lt;/li> <br>
+							&lt;% } %> <br>
+						&lt;/ul>
+                </code> olarak düzenlendi. link olarak verilen sorgu courseController.js içinde yakalanır ve sadece o kategorideki kursların gönderilmesini sağlar. Bunun için:
+            </p>
+            <p>
+                courseController.js içinde getAllCourses fonksiyonuna aşağıdaki ekleme yapılır. <br>
+                <code>
+                    const categorySlug = req.query.categories;
+                </code> ile gönderilen query yakalanır. <br>
+                <code>
+                    const category = await Category.findOne({slug: categorySlug})
+                </code> ile databaseten ilgili Category bulunur. <br>
+                <code>
+                    let filter = {} <br>
+                    if(categorySlug){ <br>
+                      filter = {category:category._id}
+                    } 
+                </code> ile queryden veri gelme durumu sorgulanır. Gelmediyse filter değişkeni boş kalır. Değilse slug bilgisi ile databaseten çekilen verinin _id değeri category keyine value olarak atanır.<br>
+                <code>
+                    const courses = await Course.find(filter);
+                </code> ifadesi güncellenir. if döngüsünden filter dolu çıkarsa buna göre göndereceği verileri filtreler.
+            </p>
+        </div>
+        <div class="row kayitSayfasiVeBcrypt">
+            <h1>Kayıt Sayfası ve Bcrypt Paketi</h1>
+
+            <h2>Kayıt Sayfası</h2>
+            <p>
+                İlk önce register sayfasını oluşturacağız. Buradaki tek amacımız sayfayı görebilmek olduğu için işlemleri pageController.js ve pageRoute.js ile yapacağız.
+            </p>
+            <p>
+                pageController.js içine: <br>
+                <code>
+                    exports.getRegisterPage = (req, res) => { <br>
+                        res.status(200).render('register', { <br>
+                          page_name: "register" <br>
+                        });
+                    }
+                </code>
+            </p>
+            <p>
+                pageRoute.js içine: <br>
+                <code>
+                    router.route('/register').get(pageController.getRegisterPage)
+                </code>
+            </p>
+            <p>
+                register.html register.ejs ye dönüştürülür ve template engine'e göre düzenlenir. _navigation.ejs'deki link düzenlenir: <br>
+                <code>
+                    &lt;li>&lt;a class="hover-btn-new log &lt;%= page_name === 'register' && 'orange' %>" href="/register">&lt;span>&lt;i class="fa fa-user-plus" aria-hidden="true">&lt;/i>&lt;/span>&lt;/a>&lt;/li>
+                </code>
+            </p>
+            <p>
+                models/User.js dosyası oluşturulur. İçine: <br>
+                <code>
+                    const mongoose = require('mongoose'); <br>
+                    const Schema = mongoose.Schema; <br><br>
+
+                    const UserSchema = new Schema({ <br>
+                    name: { <br>
+                        type: String, <br>
+                        required: true, <br>
+                    }, <br>
+                    email: { <br>
+                        type: String, <br>
+                        required: true, <br>
+                        unique: true, <br>
+                    }, <br>
+                    password: { <br>
+                        type: String, <br>
+                        required: true, <br>
+                    } <br>
+                    }); <br><br>
+
+
+                    const User = mongoose.model('User', UserSchema); <br>
+
+                    module.exports = User;
+
+                </code>
+            </p>
+            <p>
+                controller/authControler.js dosyası oluşturulur. İçine: <br>
+                <code>
+                    const User = require('../models/User') <br><br>
+
+                    exports.createUser = async (req, res) => { <br>
+                    try { <br>
+                        const user = await User.create(req.body); <br>
+
+                        res.status(201).json({ <br>
+                        status: 'succest', <br>
+                        user, <br>
+                        }); <br>
+                    } catch (error) { <br>
+                        res.status(400).json({ <br>
+                        status: 'fail', <br>
+                        error, <br>
+                        });
+                    }
+                    };
+                </code> 
+            </p>
+            <p>
+                routes/userRoute.js oluşturulur. İçine: <br>
+                <code>
+                    const express = require('express') <br>
+                    const authController = require('../controllers/authController') <br><br>
+
+                    const router = express.Router() <br><br>
+
+                    router.route('/singup').post(authController.createUser); <br><br>
+
+
+                    module.exports = router
+                </code>
+            </p>
+            <p>
+                app.js içine Routes alanına: <br>
+                <code>
+                    app.use('/users', userRoute);
+                </code> eklendi.
+            </p>
+            <p>
+                register.ejs form alanı aşağıdaki gibi düzenlendi. <br>
+                <code>
+                    &lt;form method=<u>"POST" action="users/singup"</u>>
+                </code>
+            </p>
+
+            <h2>Bcrypt</h2>
+            <p>
+                Database'e gönderilen password bilgisini şifrelenmesini sağlar.
+            </p>
+            <p>
+                terminale: <br>
+                <code>
+                    npm i bcrypt
+                </code>
+            </p>
+            <p>
+                models/User.ejs içine bcrypt import edilir. new Schema fonksiyonunu altına aşadaki middleware eklenir. <br>
+                <code>
+                    UserSchema.pre('save', function(next){ <br>
+                        const user = this; <br>
+                        bcrypt.hash(user.password, 10, (error, hash) => { <br>
+                          user.password = hash; <br>
+                          next(); <br>
+                        })
+                      })
+                </code>
+            </p>
+        </div>
+        <div class="row giris">
+            <h1>Giriş Sayfası ve Giriş İşlemi</h1>
+
+            <h2>Giriş Sayfası</h2>
+            <p>
+                pageController.js içine: <br>
+                <code>
+                    exports.getLoginPage = (req, res) => { <br>
+                        res.status(200).render('login', { <br>
+                          page_name: "login" <br>
+                        });
+                    }
+                </code> <br>
+                eklenir
+            </p>
+            <p>
+                login.html, login.ejs ye dönüştürülür ve template engine'e göre düzenlenir.
+            </p>
+            <p>
+                _navigation.ejs içinde ilgili kısım: <br>
+                <code>
+                    &lt;li>&lt;a class="hover-btn-new log &lt;%= page_name === 'login' && 'orange' %> mr-2" href="/login">&lt;span>&lt;i class="fa fa-sign-in" aria-hidden="true">&lt;/i>&lt;/span>&lt;/a>&lt;/li>
+                </code> olarak düzenlenir.
+            </p>
+            <p>
+                pageRoute.js içine: <br>
+                <code>
+                    router.route('/login').get(pageController.getLoginPage);
+                </code> eklenir.
+            </p>
+
+            <h2>Giriş İşlemi</h2>
+            <p>
+                authController.js içine: <br>
+                <code>
+                    const bcrypt = require('bcrypt');
+                </code> ile bcrypt import edilir. <br>
+                <code>
+                    exports.loginUser = async (req, res) => { <br>
+                        try { <br>
+                          const {email, password} = req.body;
+                </code> ile formdan email ve password bilgisi alınır. <br>     
+                <code>
+                          let user = await User.findOne({email: email})
+                </code> ile email bilgisi ile db üzerinde user olma durumu kontrol edilir. <br>
+                <code>
+                            if(user){ <br>
+                              bcrypt.compare(password, user.password, (err, same) =>{
+                </code> user var ise password bilgisinin eşleşmesi kontrol edilir. <br>
+                <code>
+                                if(same){ <br>
+                                  // USER SESSION br
+                                  res.status(200).send("you are logged in")
+                </code>password bilgisi eşleşiyorsa "you are logged in" bilgisi sayfaya gönderilir. Daha sonra buraya başka işlem gelecek. <br>
+                <code>
+                                }
+                              })
+                            }
+                            <br>
+                        } catch (error) { <br>
+                          res.status(400).json({ <br>
+                            status: 'fail', <br>
+                            error, <br>
+                          });
+                        }
+                      };
+                </code>
+            </p>
+            <p>
+                authController.js için bilgi göndermesi için login.ejs içindeki form ve userRoute.js düzenlenir. <br>
+                login.ejs: <br>
+                <code>
+                    &lt;form method="POST" action="users/login">
+                </code> olarak güncellenir. <br>
+                userRoute.js içine: <br>
+                <code>
+                    router.route('/login').post(authController.loginUser);
+                </code> eklenir.
+            </p>
+        </div>
+        <div class="row session">
+            <h1>Session Nedir?</h1>
+            <p>
+                Session kavramı Türkçeye oturum olarak çevrilir ve kişiye özel içerik oluşturmak için kullanıcı bilgilerinin sunucu tarafında saklanmasını sağlayan araçlardır. Node.js tarafında express-session paketini kullanacağız. 
+            </p>
+            <p>
+                session datası sunucuda saklanır. sadece session id cookie içinde saklanır.
+            </p>
+            <p>
+                terminale: 
+                <code>
+                    npm i express-session
+                </code>
+            <p>
+                app.js içine import edilir. <br>
+                <code>
+                    var session = require('express-session');
+                </code> <br>
+                app.js middleware alanına: <br>
+                <code>
+                    app.use(session({ <br>
+                        secret: 'keyboard_cat_rambo', <br>
+                        resave: false, <br>
+                        saveUninitialized: true, <br>
+                        }))
+                </code> yazılır.
+            </p>
+            <p>
+                session bilgisini yakalamak için authController.js loginUser fonksiyonundaki //USER SESSION kısmına: <br>
+                <code>
+                    req.session.userID = user._id
+                </code> eklenir. <br>
+                altındaki responsive komutu da: <br>
+                <code>
+                    res.status(200).redirect('/');
+                </code> olarak index sayfasına yönlendirebilir. <br>
+                İşlemin başarılı olduğunu anlamak için pageController.js getIndexPage fonksiyonu içine <code>console.log(req.session.userID)</code> eklenebilir. 
+            </p>
+            <p>
+                Bazı bilgilerin loginden sonra bazılarının da loginden önce görünmesini isteriz. Bunun için:
+            </p>
+            <p>
+                app.js içine // Global Variable alanı oluşturup (middleware alanının üstüne) içine: <br>
+                <code>
+                    global.userIN = null;
+                </code> yazılır. null değeri if içinde false verir. <br>
+                app.js route alanına: <br>
+                <code>
+                    app.use('*', (req, res, next)=>{ <br>
+                        userIN = req.session.userID; <br>
+                        next();
+                </code> girilir. Bu sayede her durumda userIN, req.session.userID değeri varsa alır. yoksa yine null kalır. herhangi bir response olmadığından next() ile sonraki fonksiyona geçilir.
+            </p>
+            <p>
+                _navigation.ejs içinde login ve register butonlarının sadece userIN false iken çıkması için: <br>
+                <code>
+                    &lt;% if(!userIN){ %> <br>
+                        &lt;ul class="nav navbar-nav navbar-right"> <br>
+                            &lt;li>&lt;a class="hover-btn-new log &lt;%= page_name === 'login' && 'orange' %> mr-2" href="/login">&lt;span>&lt;i class="fa fa-sign-in" aria-hidden="true">&lt;/i>&lt;/span>&lt;/a>&lt;/li> <br>
+                            &lt;li>&lt;a class="hover-btn-new log &lt;%= page_name === 'register' && 'orange' %>" href="/register">&lt;span>&lt;i class="fa fa-user-plus" aria-hidden="true">&lt;/i>&lt;/span>&lt;/a>&lt;/li> <br>
+                        &lt;/ul> <br>
+                        &lt;% } %>
+                </code>
+            </p>
+            <p>
+                userIN true iken (kullanıcı login yaptığında) logout butonunu görünmesi için: <br>
+                <code>
+                    &lt;% if(userIN){ %> <br>
+                        &lt;ul class="nav navbar-nav navbar-right"> <br>
+                            &lt;li>&lt;a class="hover-btn-new log &lt;%= page_name === 'login' && 'orange' %> mr-2" href="/login">&lt;span>&lt;i class="fa fa-sign-out" aria-hidden="true">&lt;/i>&lt;/span>&lt;/a>&lt;/li> <br>
+                        &lt;/ul> <br>
+                    &lt;% } %>
+                </code>
+            </p>
+            <p>
+                Aynı durum dashboard linki için kullanıcı varsa gösterilecek şekilde uyarlanır: <br>
+                <code>
+                    &lt;% if(userIN){ %> <br>
+						&lt;li class="nav-item">&lt;a class="nav-link" href="dashboard.html">Dashboard&lt;/a>&lt;/li> <br>
+					&lt;% } %> 
+                </code>
+            </p>
+        </div>
+        <div class="row cikis">
+            <h1>Çıkış İşlemi</h1>
+            <p>
+                authController.js içine: <br>
+                <code>
+                    exports.logoutUser = (req, res) => { <br>
+                        req.session.destroy(() => { <br>
+                          res.redirect('/'); <br>
+                        });
+                      };
+                </code> <br>
+                userRoute.js içine: <br>
+                <code>
+                    router.route('/logout').get(authController.logoutUser) 
+                </code><br>
+                _navigation.ejs logout butonu linki: <br>
+                <code>
+                    &lt;ul class="nav navbar-nav navbar-right">
+                        &lt;li>&lt;a class="hover-btn-new log mr-2" <u>href="/users/logout"</u>>&lt;span>&lt;i class="fa fa-sign-out" aria-hidden="true">&lt;/i>&lt;/span>&lt;/a>&lt;/li>
+                    &lt;/ul>
+                </code>
+            </p>
+
+            <h2>Connect Mongo</h2>
+            <p>
+                Burada şöyle bir sorunumuz var, sunucuyu tekrar başlattığımızda ilgili session yani oturumu kaybediyoruz. Bunun engellemek için connect-mongo paketini indireceğiz. Bu sayede session bilgilerini mongoDB üzerinde saklayabilyoruz. Sonrasında ise bu session bilgisini kaydedeceğimiz veritabanı bağlantısını yazacağız.
+            </p>
+            <p>
+                terminale:
+                <code>
+                    npm i connect-mongo
+                </code>
+            </p>
+            <p>
+                app.js içine import için:
+                <code>
+                    const MongoStore = require('connect-mongo'); 
+                </code>
+                app.js middleware alanına: app.use(session({ içine
+                <code>
+                    store: MongoStore.create({ mongoUrl: 'mongodb://localhost/smartedu-db' })
+                </code> parametre olarak eklenir.
+            </p>
+            <p>
+                Bu işlemden sonra sunucu bağlantısı kopup yeniden de bağlansa kullanıcı login ise login kalır.
+            </p>
+        </div>
+        <div class="row kullaniciSayfasi">
+            <h1>Kişiye Özel İçerik</h1>
+            <p>
+                dashboard.esj dosyası template engine'e göre düzenlenir.
+            </p>
+            <p>
+                işlem login işlemi ile yapılacağından işlemleri login işlemine uyumlu dosyalara yerleştirilecek.
+            </p>
+            <p>
+                authController.js içine: <br>
+                <code>
+                    exports.getDashboardPage = (req, res) => { <br>
+                        res.status(200).render('dashboard', { <br>
+                          page_name: "dashboard" <br>
+                        });
+                      }
+                </code>
+            </p>
+            <p>
+                _navigation içinden dashboard linki: "/users/dashboard" olarak güncellenir ve class active bilgisi için düzenleme yapılır. <br>
+                <code>
+                    &lt;li class="nav-item &lt;%= page_name === 'dashboard' && 'active' %>">&lt;a class="nav-link" href="/users/dashboard">Dashboard&lt;/a>&lt;/li>
+                </code>
+            </p>
+            <p>
+                userRoute.js içine: <br>
+                <code>
+                    router.route('/dashboard').get(authController.getDashboardPage);
+                </code>
+            </p>
+            <p>
+                authController.js içindeki loginUser fonksiyonunun redirect adresi '/users/dashboard' olarak güncellendi.
+            </p>
+            <p>
+                dashboard sayfasına user bilgisini göndermek için authController.js içindeki getDashboardPage fonksiyonu aşağıdaki gibi güncellenir. <br>
+                <code>
+                    exports.getDashboardPage = async(req, res) => { <br>
+                        const user = await User.findOne({_id: req.session.userID}) <br>
+                        res.status(200).render('dashboard', { <br>
+                          page_name: "dashboard", <br>
+                          user: user <br>
+                        });
+                      }
+                </code>
+            </p>
+            <p>
+                dashboard.ejs içine ilgili yere <br>
+                <code>
+                    <%= user.name %>
+                </code> eklenerek bilgi sayfaya yerleştirilir.
+            </p>
+
+
+        </div>
+        <div class="row ozelMiddleware">
+            <h1>Özel Middleware</h1>
+            <p>
+                4login ve logout durumuna göre görünmesini istemediğimiz sayfaların linklerinin başka sayfaya redirect yapması için middleware yazacağız.
+            </p>
+
+            <h2>Logout durumunda kullanılmayacak linkler</h2>
+            <p>
+                <strong>/users/dashboard</strong>
+            </p>
+            <p>
+                middleware/authMiddleware.js dosyası oluşturulur. İçine: <br>
+                <code>
+                    const User = require('../models/User'); <br><br>
+
+                    module.exports = (req, res, next) => {
+                </code> ile tüm içerik export edilir. <br>
+                <code>
+                User.findById(req.session.userID, (err, user) => {
+                </code> ile user sorgulanır. <br>
+                <code>
+                    if (err || !user) return res.redirect('/login');
+                </code> user yoksa '/login' sayfasına yönledirilir. <br>
+                <code>
+                        next();
+                    });
+                    };
+                </code> ile if geçersizse sonraki fonksiyona geçilir.
+               
+            </p>
+            <p>
+                userRoute.js içine authMiddleware import edilir. <br>
+                <code>
+                    const authMiddleware = require('../middlewares/authMiddleware');
+                </code>
+            </p>
+            <p>
+                userRoute.js dashboard route fonksiyonu aşağıdaki gibi güncellenir. <br>
+                <code>
+                    router.route('/dashboard').get(authMiddleware, authController.getDashboardPage);
+                </code> ilk fonksiyon "authMiddleware" next alırsa (if geçersizse) işlem sonrakine geçer. Yoksa authMiddleware içindeki res.redirect('/login'); çalışır.
+            </p>
+
+            <h2>Login durumunda kullanılmayacak linkler</h2>
+            <p>
+                <strong>
+                    /login <br>
+                    /register
+                </strong>
+            </p>
+            <p>
+                middleware/redirectMiddleware.js dosyası oluşturulur. İçine: <br> 
+                <code>
+                    module.exports = (req, res, next) => { <br>
+                        if (req.session.userID) return res.redirect('/'); <br>
+                        next();
+                    };
+                </code>
+            </p>
+            <p>
+                pageRoute.js içine redirectMiddleware import edilir. <br>
+                <code>
+                    const redirectMiddleware = require('../middlewares/redirectMiddleware');
+                </code>
+            </p>
+            <p>
+                pageRoute.js içinde güncelleme yapıldı. 
+                <code>
+                    router.route('/register').get(redirectMiddleware ,pageController.getRegisterPage); <br>
+                    router.route('/login').get(redirectMiddleware ,pageController.getLoginPage);
+                </code>
+            </p>
+        </div>
+        <div class="row kullaniciRolleri">
+            <h1>Kullanıcı Rolleri</h1>
+            <p>
+                Önce models/user.js içine role bilgisi eklenir. <br>
+                <code>
+                    role: { <br>
+                        type: String, <br>
+                        enum: ["student", "teacher", "admin"], <br>
+                        defult: "student", <br>
+                      },
+                </code>
+            </p> 
+            <p>
+                Bilginin alınması için register.ejs form içine: <br>
+                <code>
+                    &lt;div class="offset-1 col-lg-10 col-md-10 col-sm-10"> <br>
+                        &lt;select class="form-control" name="role" id=""> <br>
+                            &lt;option>student&lt;/option> <br>
+                            &lt;option>teacher&lt;/option> <br>
+                        &lt;/select> <br>
+                    &lt;/div>
+                </code>
+            </p>
+            <p>
+                middlewares/roleMiddleware.js içine: br
+                <code>
+                    module.exports = (roles) => {
+                </code> fonksiyonun kullanıldığı yerde argüman olarak bu parametre (roles) array şeklinde kullanılacak. <br>
+                <code>
+                        return (req, res, next) => { <br>
+                            const userRole = req.body.role; <br>
+                            if(roles.includes(userRole)) { <br>
+                                next(); <br>
+                            } else { <br>
+                                return res.status(401).send('YOU CANT DO THIS');
+                            }
+                        }
+                    }
+                </code> 
+            </p>
+            <p>
+                courseRoute createCourse yönlendirmesine admin veya teacher olma şartı konulur: <br>
+                <code>
+                    router.route('/').post(roleMiddleware(["teacher", "admin"]), courseController.createCourse);
+                </code>
+            </p>
+            <p>
+                register ekranında kayıt sonrası login sayfasına yönlendirmesi için, authController.js içinde createUser respose değeri aşağıdaki gibi güncellenir. <br>
+                <code>
+                    exports.createUser = async (req, res) => { <br>
+                        try { <br>
+                          const user = await User.create(req.body); <br>
+                      
+                          <u>res.status(201).redirect('/login')</u> <br>
+                        } catch (error) { <br>
+                          res.status(400).json({ <br>
+                            status: 'fail', <br>
+                            error, <br>
+                          });
+                        }
+                      };
+                </code>
+            </p>
+            <p>
+                user.role bilgisine göre /dashboard içinde içeriği ayarlamak için if(user.rple === '') kalıbı kullanılabilir. <br>
+                <code>
+                    &lt;% if (user.role === 'student'){ %> <br>
+                        &lt;div class="all-title-box"> <br>
+                            &lt;div class="container text-center"> <br>
+                                &lt;h1>&lt;%= user.name %>&lt;span class="m_1">STUDENT&lt;/span>&lt;/h1> <br>
+                            &lt;/div> 
+                        &lt;/div> <br>
+                    &lt;% } %>	 <br><br>
+                    &lt;% if (user.role === 'teacher'){ %> <br>
+                        &lt;div class="all-title-box"> <br>
+                            &lt;div class="container text-center"> <br>
+                                &lt;h1>&lt;%= user.name %>&lt;span class="m_1">Teacher&lt;/span>&lt;/h1> <br>
+                            &lt;/div> 
+                        &lt;/div> <br>
+                    &lt;% } %>	
+                </code>
+            </p>
+        </div>
+        <div class="row courseCreate">
+            <h1>Kurs Oluşturmak</h1>
+            <p>
+                dashboard.ejs if (user.role === 'student') iken görünecek kısmı yukarıda, if (user.role === 'teacher') iken görünecek kısmı aşağıda olacak şekilde tekrar düzenlenir.
+            </p>
+            <p>
+                dashboard.ejs teacher kısmına buton eklenir: <br>
+                <code>
+                    &lt;div class="col-lg-12 text-center "> <br>
+                        &lt;button class="btn btn-lg btn-warning rounded-0 text-white" href="#" data-toggle="modal" data-target="#addCourse">&lt;span>CREATE NEW COURSE&lt;/span>&lt;/button> <br>
+                    &lt;/div>
+                </code> <br>
+                data-target="#addCourse" sayfanın sonuna eklediğimiz modal'a işaret eder. modal tarafında id="addCourse" yer almalıdır.
+            </p>
+            <p>
+                Modal içinde daha önceden oluşturduğumuz kategorileri görebilmek için authController.ejs içine Categories import edilir. dashboard içine göndermek için getDashboardPage fonksiyonuna tüm categories çağırılır ve render kısmına eklenerek gönderilir. <br>
+                <code>
+                    exports.getDashboardPage = async(req, res) => { <br>
+                        const user = await User.findOne({_id: req.session.userID}) <br>
+                        <u>const categories = await Category.find()</u> <br> 
+                        res.status(200).render('dashboard', { <br>
+                          page_name: "dashboard", <br>
+                          user: user, <br>
+                          <u>categories: categories</u>
+                        });
+                      }
+                </code> <br>
+                Bunu yakalamak için dashboard.ejs modal form kısmında for döngüsü kullanılır. <br>
+                <code>
+                    &lt;select class="form-control" name="category"> <br>
+                        <u>
+                            &lt;% for (let i=0; i&lt; categories.length; i++) { %> <br>
+                            &lt;option value="&lt;%= categories[i]._id %>">&lt;%= categories[i].name %>&lt;/option> <br>
+                            &lt;% } %> <br>
+                        </u>		
+                        &lt;/select>
+                </code>
+            </p>
+            <p>
+                formu post ederken form tagı içinde: <br>
+                <code>
+                    method="POST" action="/courses
+                </code> girilmeli
+            </p>
+            <p>
+                createCourse route aşamasında (courseRoute.ejs içinde) user.role sorgular. Bunu da form içinde göndermemiz gerekir. bunun için form alanının içine: <br>
+                <code>
+                    &lt;div class="form-group"> <br>
+                        &lt;div class="col-sm-12"> <br>
+                            &lt;input type="hidden" name="role" class="form-control"  value="&lt;%= user.role %>"> <br>
+                        &lt;/div> <br>
+                    &lt;/div>
+                </code> <br>
+                ekleriz.
+            </p>
+            <p>Kurs yaratıldığında courses sayfasına yönlendirmesi için ilgili redirect createCourse fonksiyonunda düzenlenir: <br>
+            <code>
+                exports.createCourse = async (req, res) => { <br>
+                    try { <br>
+                      const course = await Course.create(req.body); <br>
+                      
+                      res.status(201).<u>redirect('/courses');</u><br>
+                    } catch (error) { <br>
+                      res.status(400).json({ <br>
+                        status: 'fail', <br>
+                        error, <br>
+                      });
+                    }
+                  };
+            </code></p>
+            <p>
+                Oluşturulan kursların /courses sayfasında son oluşturulanın en üstte görünmesi için courseController.js içinde getAllCourses fonksiyonudaki const courses = await Course.find(filter) ibaresine ".sort('-createdAt');" eklenir. <br> 
+                <code>
+                    const courses = await Course.find(filter).sort('-createdAt');
+                </code>
+            </p>
+
+            <h2>Kullanılan Modal</h2>
+            <p>
+                <code>
+                    dashboard.ejs içinden görülebilir.
+                </code>
+            </p>
+        </div>
+        <div class="row kursOgretmen">
+            <h1>Kurs - Öğretmen İlişkisi</h1>
+            <p>
+                Course.js modeline <br>
+                <code>
+                    user: { <br>
+                        type:mongoose.Schema.Types.ObjectId, <br>
+                        ref:'User' <br>
+                      }
+                </code> eklenir.
+            </p>
+            <p>
+                courseController.ejs içinde createCourse içinde mevcut user yakalanır: <br>
+                <code>
+                    const course = await Course.create({ <br>
+                        name: req.body.name, <br>
+                        description: req.body.description, <br>
+                        category: req.body.category, <br>
+                        user: req.session.userID <br>
+                      });
+                </code>
+            </p>
+            <p>
+                user bilgisine uygun olan coursesi dashboarda eklemek için authController.ejs getDashboardPage fonksiyonuna courses aktif kullanıcıya göre filtrelenerek tanımlanır: <br>
+                <code>
+                    const courses = await Course.find({user: req.session.userID})
+                </code> <br>
+                ve render fonksiyonu içinde gönderilir: <br>
+                <code>
+                    res.status(200).render('dashboard', { <br>
+                        page_name: "dashboard", <br>
+                        user: user, <br>
+                        categories: categories, <br>
+                        <u>courses: courses</u> <br>
+                      });
+                </code>
+            </p>
+            <p>
+                dashboard.ejs içinde courses bilgisi for döngüsü ile yakalanır ve her course için name ve description ilgili alanlara konulur. <br>
+                <code>
+                    &lt;% for(let i=0; i&lt;courses.length; i++){ %> <br>
+                    ....<br>
+                    ....<br>
+                    ... &lt;%= courses[i].name %>...<br>
+                    ... &lt;%= courses[i].description %>...<br>
+                    ....<br>
+                    &lt;% } %>
+                </code>
+            </p>
+            <p>
+                Tekli kurs sayfasında course.user bilgisinden user.name alabilmek için courseController.ejs içinde getCourse fonksiyonunda aşağıdaki güncelleme yapılır: <br>
+                <code>
+                    const course = await Course.findOne({ slug: req.params.slug })<u>.populate('user');</u>
+                </code> <br>
+                user name bilgisi için: <br>
+                <code>
+                    <%= course.user.name %>
+                </code>
+            </p>
+        </div>
+        <div class="row kursOgrenci">
+            <h1>Kurs - Öğrenci İlişkisi</h1>
+            <p>
+                Öğrencinin kurslara kayıt olası, kendi dashboard sayfasında katıldığı kursları görmesi ve yönetmesi işlemleri
+            </p>
+            <p>
+                User.js içinde UserSchema alanına aşağıdaki course bilgisi eklenir: <br>
+                <code>
+                    courses: [{ <br>
+                        type: mongoose.Schema.Types.ObjectId, <br>
+                        ref: 'Course' <br>
+                      }]
+                </code> courses array olarak oluşturuldu. Course.js modeli ile bağlandı.
+            </p>
+
+            <h2>Enroll işlemi</h2>
+            <p>
+                course.ejs içine aşağıdaki form eklendi: <br>
+                <code>
+                    &lt;form method="POST" action="/courses/enroll"> <br>
+                        &lt;input type="hidden" name="course_id" value="&lt;%= course._id %>"> <br>
+                        &lt;button class="btn btn-large btn-warning text-white">&lt;span>ENROLL&lt;/span>&lt;/button> <br>
+                    &lt;/form> <br>
+                </code>
+            </p>
+            <p>
+                courseController.js içinde aşağıdaki fonksiyon yazıldı: <br>
+                <code>
+                    exports.enrollCourse = async (req, res) => { <br>
+                        try { <br>
+                          
+                          const user = await User.findById(req.session.userID);</code> ile şu an aktif olan user bilgisi alındı. <br>
+                <code>
+                          await user.courses.push({_id: req.body.course_id}); </code> ile tıklanılan sayfanın course_id bilgisi user.courses kısmına eklendi. <br>
+                <code>
+                          await user.save();
+                </code> ile user için yapılan değişiklik kaydedildi. <br>
+                <code>
+                    res.status(200).redirect('/users/dashboard');<br>
+                        } catch (error) { <br>
+                          res.status(400).json({ <br>
+                            status: 'fail', <br>
+                            error, <br>
+                          });
+                        }
+                      };
+                </code>
+            </p>
+            <p>
+                courseRoute.j içine aşağıdaki kod eklenerek course.ejs ile ourseController.enrollCourse fonksiyonu bağlandı.<br>
+                <code>
+                    router.route('/enroll').post(courseController.enrollCourse);
+                </code>
+            </p>
+            <p>
+                user'a kayıtlı courses bilgisini almak için authController.js içindeki getDashboardPage fonksiyonunun ilgili kısmına .populate('courses'); eklenir. <br>
+                <code>
+                    exports.getDashboardPage = async(req, res) => { <br>
+                        const user = await User.findOne({_id: req.session.userID})<u>.populate('courses');</u> <br>
+                        ...
+                </code> 
+            </p>
+            <p>
+                dashboard.ejs student kısmında aşağıdaki for döngüsü yazılır ve ilgili bilgiler ilgili kısımlara girilir. <br>
+                <code>
+                    <% for(let i=0; i<user.courses.length; i++){ %> <br>
+                        ... <br>
+                        ...<%= user.courses[i].name %>... <br>
+                        ...<%= user.courses[i].slug %>... <br>
+                        ...<%= user.courses[i].description %>... <br>
+                        ... <br>
+
+                    <% } %>
+                </code>
+            </p>
+            <hr>
+            <p>
+                gelişim sürecinde modellerimiz üzerinde de değişiklik yaptık. Database üzerine eski tarihli gönderdiğimiz verilerde bu bilgiler eksik kaldı. Bu nedenle categories alanı hariç database i temizledik. Yenilerini oluşturduk.
+            </p>
+            <hr>
+
+            <h2>Release</h2>
+            <p>
+                dashboard student kısmında description kısmının altına aşağıdaki buton eklenir: <br>
+                <code>
+                    &lt;form method="POST" action=<u>"/courses/release"</u>> <br>
+                        &lt;input type="hidden" name="course_id" value=<u>"&lt;%= user.courses[i]._id %>"</u>> <br>
+                        &lt;button class="btn btn-large btn-danger text-white">&lt;span>RELEASE&lt;/span>&lt;/button> <br>
+                    &lt;/form>
+                </code>
+            </p>
+            <p>
+                courseController.js içine releaseCourse fonksiyonu yazılır. <br>
+                <code>
+                    exports.releaseCourse = async (req, res) => { <br>
+                        try { <br>
+                          
+                          const user = await User.findById(req.session.userID); <br>
+                          await user.courses<u>.pull</u>({_id: req.body.course_id}); <br>
+                          await user.save(); <br>
+                      
+                          res.status(200).redirect('/users/dashboard'); <br>
+                          
+                        } catch (error) { <br>
+                          res.status(400).json({ <br>
+                            status: 'fail', <br>
+                            error, <br>
+                          });
+                        }
+                      };                      
+                </code>
+            </p>
+            <p>
+                courseRoute içinde aşağıdaki yönlendirme ile buton ile fonksiyon bağlanır. <br>
+                <code>
+                    router.route('/release').post(courseController.releaseCourse);
+                </code>
+            </p>
+
+            <h2>Alınan kursta enrol butonunun görünmemesi için:</h2>
+            <p>
+                courseController.js getCourse içinde user bilgisi göndermek için: <br>
+                <code>
+                    exports.getCourse = async (req, res) => { <br>
+                        try { <br>
+                          const user = await User.findById(req.session.userID); <br>
+                          ... <br>
+                </code> yazılır ve user render içinde gönderilir.
+            </p>
+            <p>
+                course.ejs içindeki enroll butonu if bloğuna alınır: <br>
+                <code>
+                    &lt;% if(user && !user.courses.includes(course._id)) { %> <br>
+                        ...ENROLL... <br>
+                    &lt;% } %> <br>
+                </code> user bilgisi hiç yoksa veya user.courses içinde olduğumuz course için _id içeriyorsa buton görünmez.
+            </p>
+        </div>
+        <div class="row search">
+            <h1>Search Alanı</h1>
+            <p>
+                courses.ejs search alanı aşağıdaki gibi düzenlenir: <br>
+                <code>
+                    &lt;div class="widget-search"> <br>
+						&lt;div class="site-search-area"> <br>
+							&lt;form <u>method="GET"</u> id="site-searchform" <u>action="/courses"></u> <br>
+								&lt;div> <br>
+									&lt;input class="input-text form-control" <u>name="search"</u> id="search-k" placeholder="Search..." type="text"> <br>
+									<u>&lt;button</u> id="searchsubmit" value="Search" <u>type="submit">&lt;/button></u> <br>
+								&lt;/div> <br>
+							&lt;/form> <br>
+						&lt;/div> <br>
+					&lt;/div>
+                </code>
+            </p>
+            <p>
+                Buradan gelen bilgi courseRoute.js üzerinden courseController.getAllCourses fonksiyonuna aktarılır. 
+            </p>
+            <p>
+                Bilginin filtrelemede kullanılması için fonksiyon aşağıdaki hale güncellenir.
+                <code>
+                    exports.getAllCourses = async (req, res) => { <br>
+                        try { <br>
+                          const categorySlug = req.query.categories; <br>
+                          const query = req.query.search; 
+                </code> ile search alanındaki bilgi alınır. <br>
+                <code>                      
+                          const category = await Category.findOne({slug: categorySlug}) <br>
+                      
+                          let filter = {} <br>
+                          if(categorySlug){ <br>
+                            filter = {category:category._id} <br>
+                          } <br>
+                      
+                          if(query) { 
+                </code> query varsa <br>
+                <code>
+                            filter = {name:query}
+                </code> filter.name olarak atanır. <br>
+                <code>
+                          } <br>
+                      
+                          if(!query && !categorySlug){
+                            filter.name = "" <br>
+                            filter.category = null <br>
+                          } <br><br>
+                      
+                          const courses = await Course.find({ <br>
+                            $or:[
+                </code> bu ifade mongodb için veya demek. <br>
+                <code>
+                              {name: {$regex: '.*' + filter.name + '.*', $options: 'i'}},
+                </code> ile name başı ve sonu farketmeksizin filter.name ifadesini içerenleri sorgular. <br>
+                <code>
+                              {category: filter.category} <br>
+                            ] <br>
+                          }).sort('-createdAt'); <br>
+                          const categories = await Category.find(); <br>
+                      
+                          res.status(200).render('courses', { <br>
+                            courses, <br>
+                            categories, <br>
+                            page_name: 'courses', <br>
+                          }); <br>
+                        } catch (error) { <br>
+                          res.status(400).json({ <br>
+                            status: 'fail', <br>
+                            error, <br>
+                          });
+                        }
+                      };
+                </code>
+
+                <p>
+                    courses.ejs içindeki search alanı aynı şekilde course.ejs için de kullanılır.
+                </p>
+                <p>
+                    courses.ejs içindeki Categories alanı aynı şekilde course.ejs için de kullanılır. Çalışması için courseController.getCourse içinde <br>
+                    <code>
+                        const categories = await Category.find();
+                    </code> eklenir ve
+                    render içinde categories gönderilir.
+                </p>
+                <p>
+                    courses sayfasında kursu oluşturan teacher kullanıcının adını görmek için courseController.getAllCourses fonksiyonundaki ilgili kısım aşağıdaki gibi güncellenir.<br>
+                    <code>
+                        const courses = await Course.find({ <br>
+                            $or:[ <br>
+                              {name: {$regex: '.*' + filter.name + '.*', $options: 'i'}}, <br>
+                              {category: filter.category} <br>
+                            ] <br>
+                          }).sort('-createdAt')<u>.populate('user')</u>;
+                    </code>
+                </p>
+                <p>
+                    .populate('user') ile courses ile gönderilen user bilgisini almak için courses.ejs içindeki ilgili alana: <br>
+                    <code>
+                        <%= courses[i].user.name %> eklenir.
+                    </code>
+                </p>
+            </p>
+        </div>
+        <div class="row contactAndMail">
+            <h1>İletişim Sayfası ve Mail Göndermek</h1>
+
+            <h2>İletişim Sayfası</h2>
+            <p>
+                contact.html contact.ejs ye dönüştürülür.
+            </p>
+            <p>
+                contact.ejs template engine'e göre düzenlenir.
+            </p>
+            <p>
+                _navigation.ejs içinde ilgili linkler düzenlenir. <br>
+                <code>
+                    &lt;li class="nav-item &lt;%= page_name === 'contact' && 'active' %>">&lt;a class="nav-link" href="/contact">Contact&lt;/a>&lt;/li>
+                </code>
+            </p>
+            <p>
+                pageRoute.js içinde ilgili yönlendirme yapıldı. <br>
+                <code>
+                    router.route('/contact').get(pageController.getContactPage);
+                </code>
+            </p>
+            <p>
+                pageController.js içinde getContactPage fonksiyonu yazılır. <br>
+                <code>
+                    exports.getContactPage = (req, res) => { <br>
+                        res.status(200).render('contact', { <br>
+                          page_name: "contact" <br>
+                        });
+                    }
+                </code>
+            </p>
+            <p>
+                contact.ejs içindeki form isteğe göre düzenlenir. Bize name, email ve message yeterli. Form ayarlarını da aşağıdaki gibi düzenleriz: <br>
+                <code>
+                    &lt;form id="contactform" action="/contact" method="POST"> <br>
+                        ..... <br>
+                        ..... <br>
+                    &lt;/form>
+                </code>
+            </p>
+            <p>
+                formdan gelen bilgiyi almak için (şimdilik konsola yazdıracağız) pageController.js içinde sendEmail fonksiyonu yazılır. <br>
+                <code>
+                    exports.sendEmail = (req, res) => { <br>
+
+                        console.log(req.body); <br>
+                        }
+                </code>
+            </p>
+            <p>
+                formdan gelen bilgi routeController.js içinden ilgili fonksiyona yönlendirilir. <br>
+                <code>
+                    router.route('/contact').post(pageController.sendEmail);
+                </code>
+            </p>
+
+            <h2>Mail Göndermek</h2>
+            <p>
+                Bunun için ücretli servisler var. Biz bu uygulamada gmailin ücretsiz hizmetinden faydalanacağız. Bunun için kendi mail adresimizi kullanacağız.
+            </p>
+            <p>
+                Mail göndermek için önce nodemailer adında bir node modülü kullanacağız.
+            </p>
+            <p>
+                terminale: <br>
+                <code>
+                    npm i nodemailer
+                </code>
+            </p>
+            <p>
+                modül pageController.js çine import edilir. <br>
+                <code>
+                    const nodemailer = require("nodemailer");
+                </code>
+            </p>
+            <p>
+                pageController.sendEmail fonksiyonu aşağıdaki gibi düzenlenir. <br>
+                <code>
+                    exports.sendEmail = async(req, res) => { <br>
+    
+                        const outputMessage = ` <br>
+                        &lt;h1>Mail Details&lt;/h1> <br>
+                        &lt;ul> <br>
+                          &lt;li>Name: ${req.body.name}&lt;/li> <br>
+                          &lt;li>Email: ${req.body.email}&lt;/li> <br>
+                        &lt;/ul> <br>
+                        &lt;h1>Message&lt;/h1> <br>
+                        &lt;p>${req.body.message}&lt;/p> <br>
+                        
+                        `; <br>
+                </code> bu kısım mailimizin gövdesi olacak. <br>
+                <code>
+                        let transporter = nodemailer.createTransport({ <br>
+                          host: "smtp.gmail.com",
+                </code> gmaile yönlendiriyoruz. <br>
+                <code>
+                          port: 465,
+                </code> portu 465 e ayarlıyoruz. <br>
+                <code>
+                          secure: true,
+                </code> true for 465, false for other ports <br>
+                <code>
+                          auth: { <br>
+                            user: "drmuratgokduman@gmail.com",
+                </code> gmail accont: maili gönderecek olan adres <br>
+                <code>
+                            pass: "eqocuuyuqcrxxyhc"
+                </code> gmail password yerine google account içinde güvenlik kısmında uygulama şifrelerine girilir ve uygulama şifresi oluşturulur. uygulama: posta cihaz: windows bilgisayar <br>
+                <code>
+                          }, <br>
+                        }); <br><br>
+                      
+                        let info = await transporter.sendMail({ <br>
+                          from: '"Smart Edu Contact Form" &lt;drmuratgokduman@gmail.com>', 
+                </code> gönderen adres <br>
+                <code>
+                          to: "drmuratgokduman@gmail.com",
+                </code> alan adres <br>
+                <code>
+                          subject: "Smart Edu Contact Form New Message ✔",
+                </code> konu <br>
+                <code>
+                          html: outputMessage,
+                </code>mesajın gövdesi: yukarıda oluşturmuştuk <br>
+                <code>
+                        }); <br>
+                      
+                        console.log("Message sent: %s", info.messageId); <br>
+                                              
+                        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info)); <br>
+                                              
+                        res.status(200).redirect('contact'); <br>
+                      }
+                </code>
+            </p>
+            <p>
+                nodemailer <a href="https://nodemailer.com/about/">anasayfasında</a> konuyla ilgili başka mail opsiyonları da var (cc, bcc, dosya eki vs)
+            </p>
+
+
+            
+        </div>
+        <div class="row bildirim">
+            <h1>Flash Bildirimleri</h1>
+            <p>
+                Projemizde herhangi bir şekilde bir değişiklik yaptığımızda, yeni bir kurs oluşturduğumuzda veya mail gönderimi gibi işlemler sonucunda kullanıcıya geri bildirimde bulunmak için kullanılır.
+            </p>
+            <p>
+                Bu işlem için connect-flash modülü kullanılır.
+            </p>
+            <p>
+                terminale: <br>
+                <code>
+                    npm i connect-flash
+                </code>
+            </p>
+            <p>
+                app.js içine import edilir. <br>
+                <code>
+                    const flash = require('connect-flash');
+                </code>
+            </p>
+            <p>
+                app.js middleware alanına: <br>
+                <code>
+                    app.use(flash());
+                </code>
+            </p>
+            <p>
+                flash dan gelen mesajı lokalde bir değişkene kaydetmek için middleware alanına: <br>
+                <code>
+                    app.use((req, res, next)=>{ <br>
+                        res.locale.flashMessages = req.flash(); <br>
+                        next(); <br>
+                      })
+                </code>
+            </p>
+
+            <h2>Mail gönderimi sonrası bildirim göndermek:</h2>
+            <p>
+                pageController.sendMail fonksiyonunun içine en sondaki redirect komutundan önce: <br>
+                <code>
+                    req.flash("success", "We received your message succesfuly");
+                </code> eklenir.
+            </p>
+            <p>
+                Başarısız işlemlerde hata mesajı yazdırabilmek için pageController.sendMail fonksiyonunun içeriği try catch bloğuna alınır. catch kısmına: <br>
+                <code>
+                    req.flash("error", "Something happened!"); <br>
+                    res.status(200).redirect('contact');
+                </code> eklenir.
+            </p>
+            <p>
+                Mesajı contact.ejs içinde görmek için istenilen yere: <br>
+                <code>
+                    &lt;% if(flashMessages){ %> <br>
+                        &lt;% if(flashMessages.success){ %> <br>
+                            &lt;div class="alert alert-success"> <br>
+                                &lt;%= flashMessages.success %> <br>
+                            &lt;/div> <br>
+
+                        &lt;% } else if(flashMessages.error){ %> <br>
+                            &lt;div class="alert alert-danger"> <br>
+                                &lt;%= flashMessages.error %> <br>
+                            &lt;/div> <br>
+                        &lt;% } %> <br>
+                    &lt;% } %>
+                </code>
+            </p>
+            <p class="alert alert-warning">
+                Her şey normalken hata alıyorsan ağı kontrol et. şirket ağı bazı fonksiyonları kısıtlıyor.
+            </p>
+
+            <h2>Kurs oluşturduktan sonra bildirim almak:</h2>
+            <p>
+                courseController.courseCreate fonksiyonunda try bloğunun en altındaki redirect fonksiyonundan önce: <br>
+                <code>
+                    req.flash('success', `${course.name} Has Been Created Succesfuly`);
+                </code> eklenir. <br>
+                catch bloğu da aşağıdaki gibi güncellenir. <br>
+                <code>
+                    req.flash('error', `Something Happened!`); <br>
+                    res.status(400).redirect('/courses');
+                </code>
+            </p>
+            <p>
+                flash ile gelen bilgiyi yakalamak için courses.ejs içine mail gönderiminde eklediğimiz kodu kullanabiliriz. Bildirimi görmek istediğimiz yere ekleriz.
+            </p>
+            
+        </div>
+        <div class="row dogrulama">
+            <h1>Kayıt ve Kullanıcı Doğrulama</h1>
+            <p>
+                Doldurulması zorunlu alanlar için html input kodlarına öz nitelik olarak required eklenebilir.
+            </p>
+            <p>
+                Biz bu çalışmada express-validator modülü ile form kontrolü yapacağız.
+            </p>
+            <p>
+                terminale: <br>
+                <code>
+                    npm i express-validator
+                </code>
+            </p>
+
+            <h2>Sing Up sayfasında form denetimi:</h2>
+            <p>
+                userRoute.js içine import edilir: <br>
+                <code>
+                    const { body } = require('express-validator');
+                </code> bize bu kısımda sadece body fonksiyonu gerekecek.
+            </p>
+            <p>
+                userRoute.js içindeki singup post request routeu aşağıdaki gibi düzenlenir. <br>
+                <code>
+                    router.route('/singup').post( <br>
+                [ <br>
+                    body('name').not().isEmpty().withMessage('Please Enter Your Name'), 
+                </code> bu kısımda formdan gelen name parametresi boş ise "Please Enter Your Name" mesajı gönderilir. <br>
+                ], <br>
+                
+                authController.createUser);
+                </code>
+            </p>
+            <p>
+                Gönderilen hata mesajı authControler.createUser catch tarafında yakalanır. Bunun için önce express-validator import edilir. <br>
+                <code>
+                    const { validationResult } = require('express-validator');
+                </code> <br>
+                sonra catch bloğunda hata mesajı yakalanır. <br>
+                <code>
+                    const errors = validationResult(req); <br>
+                    console.log(errors);
+                </code> konsolda bir array içinde bir obje yazdırılır. bize gereken hata mesajı için: <br>
+                <code>
+                    console.log(errors.array()[0].msg);
+                </code>  
+            </p>
+            <p>
+                Aldığımız hata mesajını bir önceki konudaki flash metodu ile ilgili template'e göndereceğiz <br> 
+                bunun için catch bloğunun en altına: <br>
+                <code>
+                    req.flash('error', errors.array()[0].msg); <br>
+                    res.status(400).redirect('/register')   
+                </code> eklenir.
+            </p>
+            <p>
+                Gönderilen mesaj register.ejs içinde istenilen yere daha önceki kodun aynısı olarak girilir: <br>
+                <code>
+                    &lt;% if(flashMessages){ %> <br>
+                        &lt;% if(flashMessages.success){ %> <br>
+                            &lt;div class="alert alert-success"> <br>
+                                &lt;%= flashMessages.success %> <br>
+                            &lt;/div> <br>
+
+                        &lt;% } else if(flashMessages.error){ %> <br>
+                            &lt;div class="alert alert-danger"> <br>
+                                &lt;%= flashMessages.error %> <br>
+                            &lt;/div> <br>
+                        &lt;% } %> <br>
+                    &lt;% } %> <br>
+                </code>
+            </p>
+            <p>
+                userRoute.js içine: <br>
+                <code>
+                    const User = require('../models/User');
+                </code>
+            </p>
+            <p>
+                userRoute.js içindeki singup post request routeu diğer inputlardan gelen veriyi de değerlendirmesi için aşağıdaki gibi güncellenir. <br>
+                <code>
+                    router.route('/singup').post( <br>
+                    [ <br>
+                        body('name').not().isEmpty().withMessage('Please Enter Your Name'), <br>
+                        body('email').isEmail().withMessage('Please Enter Valid Email')
+                </code> bu kısım mail adresi değil ise mesaj gönder. <br>
+                <code>
+                        .custom((userEmail)=> {
+                </code> bu kısımdaki sınamayı kendimiz yazdık. Mail adresinin databasete zaten olması durumunda hata mesajı gönderir. Sınamanın gerçekleşebilmesi için User modeli import edilir <br>
+                <code>
+                            return User.findOne({email: userEmail}).then(user => { <br>
+                                return Promise.reject('Email is already exist') <br>
+                            }) <br>
+                        }), <br>
+                        body('password').not().isEmpty().withMessage('Please Enter Your Password'),
+                </code> password kısmı boş ise hata mesajı verir.
+                <code>
+                    ], <br> 
+                    
+                    authController.createUser); <br>
+                </code> 
+            </p>
+            <p>
+                Gelen birden fazla mesajın hepsinin yazılabilmesi için authController.createUser catch blogu içine for döngüsü yazılır. <br>
+                <code>
+                } catch (error) { <br>
+                    const errors = validationResult(req); <br>
+                
+                    for (let i=0; i&lt;errors.array().length; i++){ <br>
+                      req.flash('error', errors.array()[i].msg); <br> 
+                    } <br>
+                    
+                    res.status(400).redirect('/register') <br>
+                  } 
+                </code>
+            </p>
+
+            <h2>Login sayfasında form denetimi:</h2>
+            <p>
+                Bu kısımda emaile sahip user olma durumu ve password kontrol authController.loginUser fonksiyonunda zaten olduğu için userRoute içinde tekrar kontrol etmeye gerek yoktur.
+            </p>
+            <p>
+                if(user) bloğunun else bloğuna: <br>
+                <code>
+                    req.flash('error', 'User Is Not Exist'); <br>
+                    res.status(200).redirect('/login'); <br>
+                </code> yazılarak user yoksa alınacak mesajı gönderir.
+            </p>
+            <p>
+                if(user) içindeki if(same) bloğunun else bloğu içine: <br>
+                <code>
+                    req.flash('error', 'Your Password Is Not Correct!!'); <br>
+                    res.status(200).redirect('/login'); <br>
+                </code> yazılarak password doğru değilse alınacak mesajı gönderir.
+            </p>
+            <p>
+                login.esj içinde istenilen yerde bu mesajlar aşağıdaki kod ile yakalanır. <br>
+                <code>
+                    &lt;% if(flashMessages){ %> <br>
+                        &lt;% if(flashMessages.success){ %> <br>
+                            &lt;div class="alert alert-success"> <br>
+                                &lt;%= flashMessages.success %> <br>
+                            &lt;/div> <br>
+
+                        &lt;% } else if(flashMessages.error){ %> <br>
+                            &lt;div class="alert alert-danger"> <br>
+                                &lt;%= flashMessages.error %> <br>
+                            &lt;/div> <br>
+                        &lt;% } %> <br>
+                    &lt;% } %> <br>
+                </code>
+            </p>
+            <p>
+                validation için detaylı okuma için <a href="https://github.com/validatorjs/validator.js">github.com/validatorjs</a> ve <a href="https://express-validator.github.io/docs/">express-validator.github.io/docs</a>
+            </p>
+        </div>
+        <div class="row hata">
+            <h1>Bir hata ile karşılaştık</h1>
+            <h2 class="text-danger">Kullanıcı bilgisi değiştiğinde password değişiyor.</h2>
+            <p class="alert-danger">
+                student içine course enroll edildiğinde database üzerindeki password verisi değişiyor.
+            </p>
+            <p>
+                Bu durumu çözmek için google üzerinde arama yapıyoruz: <br>
+                <q>how to prevent refreshing password mongoose</q>
+            </p>
+            <p>
+                Bulunan <a href="https://stackoverflow.com/questions/43706606/how-to-prevent-mongoose-from-rehashing-the-user-passwords-after-modifying-a-user">stackoverflow</a> linki.
+            </p>
+            <p>
+                Linkteki cevabın referans verdiği <a href="https://mongoosejs.com/docs/api.html#document_Document-isModified">doküman</a>
+            </p>
+            <p>
+                stackoverflow da cevap olarak verilen kod null ifadesi silindikten ve userSchema <q>UserSchema</q> olarak kodumuzla uyumlu hale getirildiğinde işimizi görüyor. <br>
+                <code>
+                    UserSchema.pre('save', function(next) { <br>
+                        const user = this; <br>
+                        if (!user.isModified('password')) return next(); <br>
+                    
+                        bcrypt.genSalt(10, function(err, salt) { <br>
+                            if (err) return next(err); <br>
+                            bcrypt.hash(user.password, salt, function(err, hash) { <br>
+                                if (err) return next(err); <br>
+                                user.password = hash; <br>
+                                next(); <br>
+                            }); <br>
+                        }); <br>
+                    }); <br>
+                </code> 
+            </p>
+
+            <h3>Benim çözümüm</h3>
+            <p class="alert-success p-2">
+                Kendi kodumuzu incelediğimizde her save işleminden önce password bilgisinin tekrar hash edildiğini görüyoruz. Bunu engellemek için koda bir if koşulu eklememiz yeterli olacaktır. <br>
+                <code>
+                    UserSchema.pre('save', function (next) { <br>
+                        const user = this; <br>
+                        <u>if(!user.isModified('password')) return next();</u> <br>
+                      
+                        bcrypt.hash(user.password, 10, (error, hash) => { <br>
+                          user.password = hash; <br>
+                          next(); <br>
+                        }); <br>
+                      }); 
+                </code> 
+            </p>
+        </div>
+        <div class="row deleteCourse">
+            <h1>Kurs Silmek</h1>
+            <p>
+                delete ve update butonlarını eklemek için dashboard.ejs içinde teacher kısmındaki kurs kartlarına aşağıdaki kod eklenir: <br>
+                <code>
+                    &lt;div class="clearfix"> <br>
+                        &lt;ul style="list-style-type: none;"> <br>
+                            &lt;li style="float: left;">&lt;button class="btn btn-primary rounded-0 text-white">&lt;span>UPDATE&lt;/span>&lt;/button>&lt;/li> <br>
+                            &lt;li style="float: right;">&lt;button class="btn btn-danger rounded-0 text-white">&lt;span>DELETE&lt;/span>&lt;/button>&lt;/li> <br>
+                        &lt;/ul> <br>
+                    &lt;/div> 
+                </code>
+            </p>
+            <p>
+                delete ve update işlemleri için method-override paketi indirilir. Terminale: <br>
+                <code>
+                    npm i method-override
+                </code>
+            </p>
+            <p>
+                app.js içine method-override import edilir. <br>
+                <code>
+                    const methodOverride = require('method-override')
+                </code> <br>
+                ilgili middleware ilgili alana yazılır. <br>
+                <code>
+                    app.use( <br>
+                        methodOverride('_method', { <br>
+                            methods: ['POST', 'GET'], <br>
+                        }) <br>
+                        ); 
+                </code>
+            </p>
+            <p>
+                dashboard.ejs delete butonu aşağıdaki gibi modifiye edilir: <br>
+                <code>
+                    &lt;li style="float: right;">&lt;a <br>
+                        href="/courses/&lt;%= courses[i].slug %>?_method=DELETE" <br>
+                        onclick="return confirm('ARE YOU SURE?')" <br>
+                        class="btn btn-danger rounded-0 text-white">&lt;span>DELETE&lt;/span>&lt;/a>&lt;/li>
+                </code>
+            </p>
+            <p>
+                courseController.js içine <br>
+                <code>
+                    exports.deleteCourse = async (req, res) => { <br>
+                        try { <br>
+                          
+                          const course = await Course.findOneAndRemove({slug:req.params.slug}) <br>
+                          req.flash('error', `${course.name} Has Been Remote Succesfuly`); br
+                          res.status(200).redirect('/users/dashboard'); <br>
+                          
+                        } catch (error) { <br>
+                          res.status(400).json({ <br>
+                            status: 'fail', <br>
+                            error, <br>
+                          }); <br>
+                        }
+                      };
+                </code>
+            </p>
+            <p>
+                fonksiyon ile komutu bağlamak için courseRoute.js içinde <br>
+                <code>
+                    router.route('/:slug').delete(courseController.deleteCourse);
+                </code>
+            </p>
+            <p>
+                Gönderilen flash mesajı dashboard.ejs içinde istenilen yere eklenir.
+            </p>
+        </div>
+        <div class="row updateCourse">
+            <h1>Kurs Güncellemek</h1>
+            <p>
+                Bir önceki çalışmada method-override paketini kurmuştuk. Bunun üzerinden devam edeceğiz.
+            </p>
+            <p>
+                update butonuna tıkladığımızda bir modal açılacak ve içinde tıkladığımız kursun bilgileri yazacak.
+            </p>
+            <p>
+                CREATE NEW COURSE içn kullandığımız ve sayfanın en altına yazdığımız modalı kopyalayıp kurs listelemek için kullandığımız for döngüsünün en altına yapıştırıyoruz. Bu sayede modal ilgili kursun bilgilerini alabiliyor.
+            </p>
+            <p>
+                dashboard.ejs içinde UPDATE butonu aşağıdaki gibi güncellenir: <br>
+                <code>
+                    &lt;li style="float: left;">&lt;button class="btn btn-primary rounded-0 text-white" <br>
+                        data-toggle="modal" data-target="#updateCourse&lt;%= courses[i]._id %>"
+                </code> bu kısım modal için gerekli. data-target ile modal id aynı olmalı. <br>
+                <code>
+                        >&lt;span>UPDATE&lt;/span>&lt;/button>&lt;/li>
+                </code>
+            </p>
+            <p>
+                modal içindeki değişiklikler: <br>
+                <code>
+                    &lt;div class="modal fade" <u>id="updateCourse&lt;%= courses[i]._id %>"</u> tabindex="-1" role="dialog" aria-labelledby="myModalLabel"> <br>
+                    ... <br>
+                    &lt;form method="POST" <u>action="/courses/&lt;%= courses[i].slug %>?_method=PUT"</u> class="form-horizontal"> <br>
+                    ... <br>
+                    &lt;input type="text" name="name" <u>value="&lt;%= courses[i].name %>"</u> class="form-control"  placeholder="Course Name"><br>
+                    ... <br>
+                    &lt;textarea rows="8" name="description" class="form-control"
+                    placeholder="Course Description" required><u>&lt;%= courses[i].description %></u>&lt;/textarea> <br>
+                    ...
+                </code>
+            </p>
+            <p>
+                courseController.js içine: <br>
+                <code>
+                    exports.updateCourse = async (req, res) => { <br>
+                        try { <br>
+                          
+                          const course = await Course.findOne({slug:req.params.slug}) <br>
+                          course.name = req.body.name; <br>
+                          course.description = req.body.description; <br>
+                          course.category = req.body.category; <br>
+                          course.save(); <br>
+                       
+                          req.flash('success', `${course.name} Has Been Update Succesfuly`); <br>
+                          res.status(200).redirect('/users/dashboard'); <br>
+                          
+                        } catch (error) { <br>
+                          res.status(400).json({ <br>
+                            status: 'fail', <br>
+                            error, <br>
+                          }); <br>
+                        } <br>
+                      };
+                </code>
+            </p>
+            <p>
+                routeController.js içine: <br>
+                <code>
+                    router.route('/:slug').put(courseController.updateCourse);
+                </code> eklenir.
+            </p>
+        </div>
+        <div class="row admin">
+            <h1>Admin Alanı ve Kullanıcı Silmek</h1>
+            <p>
+                Bu çalışmada ayrı admin alanı oluşturmak yerine dashboard alanını kullanacağız.
+            </p>
+            <p>
+                Admin kullanıcısını student olarak yaratıp database üzerinden manuel admin yaptık.
+            </p>
+            <p>
+                dashboard.ejs student alanını kopyalayıp teacher alanının altına yapıştırdık. ve <code>user.role === 'admin'</code> olarak güncelledik.
+            </p>
+            <p>
+                for döngüsünü sildik ve yerine bu tamplate için kullanılan bootstrap yapısına uygun bir tablo örneği yapıştırdık.
+            </p>
+            <p>
+                Tüm user bilgisini dashboard.ejs de kullanabilmek için authController.getDashboardPage fonksiyonuna: <br>
+                <code>
+                    const users = await User.find()
+                </code> 
+                ile tüm kurslar çağırılır ve render alanında gönderilen verilere 
+                <code>
+                    users
+                </code> eklenir.
+            </p>
+            <p>
+                users bilgisi tablo içinde yakalanır: <br>
+                <code>
+                    &lt;table class="table"> <br>
+                        &lt;thead> <br>
+                          &lt;tr> <br>
+                            &lt;th scope="col">ID#&lt;/th> <br>
+                            &lt;th scope="col">Email&lt;/th> <br>
+                            &lt;th scope="col">Role&lt;/th> <br>
+                            &lt;th scope="col">Delete&lt;/th> <br>
+                          &lt;/tr> <br>
+                        &lt;/thead> <br>
+                        &lt;tbody> <br>
+    
+                        &lt;% for(let i=0; i&lt;users.length; i++){ %> <br>
+                          &lt;tr> <br>
+                            &lt;th scope="row">&lt;%= users[i]._id %>&lt;/th> <br>
+                            &lt;td>&lt;%= users[i].email %>&lt;/td> <br>
+                            &lt;td>&lt;%= users[i].role %>&lt;/td> <br>
+                            &lt;td>DELETE&lt;/td>
+                </code> DELETE butonu daha sonra aktif hale getirilecek<br>
+                <code>
+                          &lt;/tr> <br>
+                        &lt;% } %> <br>
+                        &lt;/tbody> <br>
+                      &lt;/table>
+                </code>
+            </p>
+            <p>
+                DELETE butonu için: <br>
+                <code>
+                    &lt;td>&lt;a <br>
+                        href="/users/&lt;%= users[i]._id %>?_method=DELETE" <br>
+                        onclick="return confirm('ARE YOU SURE?')" <br>
+                        class="btn btn-danger rounded-0 text-white">&lt;span>DELETE&lt;/span>&lt;/a>&lt;/td>
+                </code>
+            </p>
+            <p>
+                authController.js içine: <br>
+                <code>
+                    exports.deleteUser = async (req, res) => { <br>
+                        try { <br>
+                          await User.findByIdAndRemove(req.params.id); <br>
+                          res.status(200).redirect('/users/dashboard'); <br>
+                          
+                        } catch (error) { <br>
+                          res.status(400).json({ <br>
+                            status: 'fail', <br>
+                            error, <br>
+                          }); <br>
+                        } <br>
+                      };
+                </code>
+            </p>
+            <p>
+                userRoute.js içine: <br>
+                <code>
+                    router.route('/:id').delete(authController.deleteUser);
+                </code>
+            </p>
+            <p>
+                role: teacher olan bir kullanıcıyı kaldırdığımızda, onun oluşturduğu kurslar kalmaya devam eder ve hata alırız. Bu nedenle teacher kaldırıldığında ona bağlı kurslar da kaldırılsın isteriz. Bu nedenle authController.deleteUser fonksiyonunu aşağıdaki gibi modifiye ederiz. <br>
+                <code>
+                    exports.deleteUser = async (req, res) => { <br>
+                        try { <br>
+                          await User.findByIdAndRemove(req.params.id); <br>
+                          <u>await Course.deleteMany({ user: req.params.id });</u> <br>
+                      
+                          res.status(200).redirect('/users/dashboard'); <br>
+                        } catch (error) { <br>
+                          res.status(400).json({ <br>
+                            status: 'fail', <br>
+                            error, <br>
+                          }); <br>
+                        } <br>
+                      }; 
+                </code>
+            </p>
+        </div>
+        <div class="row category">
+            <h1>Kategori Eklemek ve Silmek</h1>
+            <p>
+                dashboard.ejs admin alanındaki tablonun altına kendi kopyasını oluşturup modifiye edip üzerinde çalışacağız. <br>
+                <code>
+                    &lt;div class="row mt-5"> <br>
+                        &lt;h2>Categories&lt;/h2> <br>
+                        &lt;table class="table"> <br>
+                            &lt;thead> <br>
+                              &lt;tr> <br>
+                                &lt;th scope="col">ID#&lt;/th> <br>
+                                &lt;th scope="col">Categories&lt;/th> <br>
+                                &lt;th scope="col">Add&lt;/th> <br>
+                                &lt;th scope="col">Delete&lt;/th> <br>
+                              &lt;/tr> <br>
+                            &lt;/thead> <br>
+                            &lt;tbody> <br>
+        
+                            &lt;% for(let i=0; i&lt;categories.length; i++){ %> <br>
+                              &lt;tr> <br>
+                                &lt;th scope="row">&lt;%= categories[i]._id %>&lt;/th> <br>
+                                &lt;td>&lt;%= categories[i].name %>&lt;/td> <br>
+                                &lt;td>ADD&lt;/td>
+                </code> add butonu daha sonra düzenlenecek <br>
+                <code>
+                                &lt;td>&lt;a  <br>
+                                    href="/categories/&lt;%= categories[i]._id %>?_method=DELETE" <br>
+                                    onclick="return confirm('ARE YOU SURE?')" <br>
+                                    class="btn btn-danger rounded-0 text-white">&lt;span>DELETE&lt;/span>&lt;/a>&lt;/td> <br>
+                              &lt;/tr> <br>
+                            &lt;% } %> <br>
+                            &lt;/tbody> <br>
+                          &lt;/table> <br>
+        
+                    &lt;/div>&lt;!-- end row --> <br>
+                </code>
+            </p>
+
+            <h2>Kategori silmek</h2>
+            <p>
+                categoryController içine: <br>
+                <code>
+                    exports.deleteCategory = async (req, res) => { <br>
+                        try { <br>
+                          await Category.findByIdAndRemove(req.params.id); <br>
+                      
+                          res.status(200).redirect('/users/dashboard'); <br>
+                        } catch (error) { <br>
+                          res.status(400).json({ <br>
+                            status: 'fail', <br>
+                            error, <br>
+                          }); <br>
+                        } <br>
+                      };
+                </code>
+            </p>
+            <p>
+                fonksiyon ile isteği bağdaştırmak için categoryRoute.js içine: <br>
+                <code>
+                    router.route('/:id').delete(categoryController.deleteCategory);
+                </code>
+            </p>
+
+            <h2>Kategori eklemek</h2>
+            <p>
+                add butonu: <br>
+                <code>
+                    &lt;button class="btn btn-warning rounded-0 text-white" href="#" data-toggle="modal" data-target="#addCategory">&lt;span>ADD&lt;/span>&lt;/button>
+                </code>
+            </p>
+            <p>
+                categoryController.createCourse fonksiyonunu daha önce yazmıştık. Sadece <code>res.status(201).redirect('/users/dashboard');</code> yönlendirmesi eklendi. 
+            </p>
+            <p>
+                ilgili route daha önce yazılmıştı.
+            </p>
+        </div>
+        <div class="row homePage">
+            <h1>Anasayfa düzeni</h1>
+            <p>
+                pageController.getIndexPage fonksiyonu içinde anasayfada kullanmak için bazı bilgiler göndereceğiz. <br>
+                <code>
+                    exports.getIndexPage = async (req, res) => { <br>
+  
+                        const courses = await Course.find().sort('-createdAt').limit(2);
+                </code> kursları oluşturulma sırasına göre tersten sıralıyoruz ve iki tanesini alıyoruz. <br>
+                <code>
+                        const totalCourses = await Course.find().countDocuments(); 
+                </code> toplam kurs sayısı <br>
+                <code>
+                    const totalStudents = await User.countDocuments({role: 'student'});
+                </code> toplam öğrenci sayısı <br>
+                <code>
+                    const totalTeachers = await User.countDocuments({role: 'teacher'});
+                </code> toplam öğretmen sayısı <br>
+                <code>
+                      
+                        res.status(200).render('index', { <br>
+                          page_name: 'index', <br>
+                          courses, <br>
+                          totalCourses, <br>
+                          totalStudents, <br>
+                          totalTeachers, <br>
+                        }); <br>
+                      };
+                </code>
+            </p>
+            <p>
+                Gönderilen veriler anasayfada yerleştirilerek kullanılır.
+            </p>
         </div>
     </div>
     
+  <!-- Option 1: Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>   
 </body>
 </html>
